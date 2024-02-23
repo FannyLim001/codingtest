@@ -14,26 +14,82 @@
 // The number of calls to schedule and findAvailableSlots will not exceed 104.
 
 function createMeetingScheduler() {
-    let meetings = []; // Closure to store meetings
+	let meetings = []; // Closure to store meetings
 
-    function schedule(start, end) {
-        // CODE HERE
-    }
+	function schedule(start, end) {
+		for (var i = 0; i < meetings.length; i++) {
+			var [existingStart, existingEnd] = meetings[i];
+			if (
+				(start >= existingStart && start < existingEnd) ||
+				(end > existingStart && end <= existingEnd) ||
+				(start <= existingStart && end >= existingEnd)
+			) {
+				console.log("There's a conflict with an existing meeting.");
+				return false;
+			}
+		}
 
-    function findAvailableSlots(duration, start, end) {
-        const availableSlots = [];
-        // CODE HERE
-        return availableSlots;
-    }
+		meetings.push([start, end]);
+		console.log(
+			"True: Meeting scheduled from " +
+				secondsToMinutes(start) +
+				" to " +
+				secondsToMinutes(end)
+		);
+		return meetings;
+	}
 
-    return { schedule, findAvailableSlots };
+	function findAvailableSlots(duration, start, end) {
+		const availableSlots = [];
+
+		// Sort meetings based on start time
+		meetings.sort((a, b) => a[0] - b[0]);
+
+		// Check the slot before the first meeting
+		if (meetings.length > 0 && meetings[0][0] - start >= duration) {
+			availableSlots.push([start, meetings[0][0]]);
+		}
+
+		// Check slots between meetings
+		for (var i = 0; i < meetings.length - 1; i++) {
+			var currentEnd = meetings[i][1];
+			var nextStart = meetings[i + 1][0];
+
+			// Calculate the available slot between the current meeting and the next meeting
+			var availableStart = currentEnd;
+			var availableEnd = nextStart;
+
+			// If the duration can fit in the available slot, add it to availableSlots array
+			if (availableEnd - availableStart >= duration) {
+				availableSlots.push([availableStart, availableEnd]);
+			}
+		}
+
+		// Check the slot after the last meeting
+		if (
+			meetings.length > 0 &&
+			end - meetings[meetings.length - 1][1] >= duration
+		) {
+			availableSlots.push([meetings[meetings.length - 1][1], end]);
+		}
+
+		return availableSlots;
+	}
+
+	function secondsToMinutes(seconds) {
+		var hours = Math.floor(seconds / 60);
+		var mins = seconds % 60;
+		return (hours < 10 ? "0" : "") + hours + ":" + (mins < 10 ? "0" : "") + mins;
+	}
+
+	return { schedule, findAvailableSlots };
 }
 
 const scheduler = createMeetingScheduler();
 
 // Schedule some meetings
-console.log(scheduler.schedule(60, 120));  // True: Meeting scheduled from 1:00 to 2:00
-console.log(scheduler.schedule(150, 180)); // True: Meeting scheduled from 2:30 to 3:00
+console.log(scheduler.schedule(60, 120)); // true: Meeting scheduled from 01:00 to 02:00
+console.log(scheduler.schedule(150, 180)); // true: Meeting scheduled from 02:30 to 03:00
 
 // Find available slots
 console.log(scheduler.findAvailableSlots(30, 0, 240));

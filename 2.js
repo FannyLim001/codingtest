@@ -13,12 +13,19 @@
 // Elements for which the callback function returns true should be included in the new array.
 // The original array should not be modified.
 
-
 const numbers = [1, 2, 3, 4, 5];
 const isEven = (element) => element % 2 === 0;
 
 function customFilter(array, callback) {
-    //CODE HERE
+	//CODE HERE
+	var newArray = [];
+	for (var i = 0; i < array.length; i++) {
+		var checkNumber = callback(array[i], array.indexOf(i), array);
+		if (checkNumber == true) {
+			newArray.push(array[i]);
+		}
+	}
+	return newArray;
 }
 
 const filteredNumbers = customFilter(numbers, isEven);

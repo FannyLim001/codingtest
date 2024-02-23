@@ -12,9 +12,16 @@
 // The transform function should be applied to every element in the array.
 // The original array should not be modified; instead, a new array with the transformed values should be returned.
 
+function transformArray(array, transform) {
+	// CODE HERE
+	var newArray = [];
 
-function transformArray(array, transform) {    
-    // CODE HERE
+	for (var i = 0; i < array.length; i++) {
+		var transformedNumber = transform(array[i]);
+		newArray.push(transformedNumber);
+	}
+
+	return newArray;
 }
 
 const numbers = [1, 2, 3, 4];
